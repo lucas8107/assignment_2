@@ -1,0 +1,6 @@
+./ai/Minimax.java
+./ai/Node.java
+./cf/ConnectFour.java
+./cf/FieldGUI.java
+./util/ObjectSizeFetcher.java
+./util/Util.java
