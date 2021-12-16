@@ -1,4 +1,5 @@
 package ai;
+
 import java.util.LinkedList;
 import util.Util;
 
@@ -6,7 +7,7 @@ public class Node implements Comparable<Node> {
 
 	// 7x7 cells
 	static int totalNodes = 0;
-	
+
 	public char[][] cells;
 	private int[] slots;
 	private boolean isMax;
@@ -15,7 +16,7 @@ public class Node implements Comparable<Node> {
 	private int depth;
 	private char token;
 	private char enemyToken;
-	
+
 	public Node(char[][] cells, boolean isMax, int[] slots, int move, int depth, char token) {
 		this.cells = cells;
 		this.slots = slots;
@@ -24,65 +25,64 @@ public class Node implements Comparable<Node> {
 		this.move = move;
 		this.depth = depth;
 		this.token = token;
-		if(token == 'X')
+		if (token == 'X')
 			this.enemyToken = 'O';
 		else
 			this.enemyToken = 'X';
-		//if(move != -1) 
-		//	Minimax.visitedNodes++;
 	}
-	
+
 	public LinkedList<Node> makeDescendants() {
-		
+
 		LinkedList<Node> children = new LinkedList<Node>();
 		int totalChildren = 7;
-		
-		if(Util.isSymmetric(this.cells))
+
+		if (Util.isSymmetric(this.cells))
 			totalChildren = 4;
-		
-		for(int i = 0; i < totalChildren; i++) {
-			if(this.slots[i] < 6) {
+
+		for (int i = 0; i < totalChildren; i++) {
+			if (this.slots[i] < 6) {
 				char[][] temp = Util.copy2Darray(this.cells);
 				int[] temp_2 = Util.copyArray(this.slots);
 				temp_2[i]++;
-				if(isMax)
+				if (isMax)
 					temp[this.slots[i]][i] = this.token;
 				else
 					temp[this.slots[i]][i] = this.enemyToken;
-				children.add(new Node(temp, !isMax, temp_2, i, new Integer(this.depth + 1), new Character(this.token)));
+				children.add(new Node(temp, !isMax, temp_2, i, this.depth + 1, this.token));
 			}
 		}
-		
+
 		return children;
 	}
-	
-	public int getMove() { return this.move; }
-	public int getDepth() { return this.depth; }
-	public char getToken() { return this.token; }
-	public char getEnemyToken() { return this.enemyToken; }
-	
-	public void setUtility(int utility) { this.utility = utility; }
+
+	public int getMove() {
+		return this.move;
+	}
+
+	public int getDepth() {
+		return this.depth;
+	}
+
+	public char getToken() {
+		return this.token;
+	}
+
+	public char getEnemyToken() {
+		return this.enemyToken;
+	}
+
+	public void setUtility(int utility) {
+		this.utility = utility;
+	}
 
 	@Override
 	public int compareTo(Node o) {
-		// TODO Auto-generated method stub
-		if(this.utility > o.utility)
+		if (this.utility > o.utility)
 			return 1;
-		else if(this.utility == o.utility) {
+		else if (this.utility == o.utility) {
 			return 0;
-		//	if(this.depth > o.depth)
-			//	return 1;
-			//else if(this.depth == o.depth) {
-			//	if(Math.abs(this.move - 4) < Math.abs(o.move - 4))
-			//		return 1;
-			//	else
-					//return -1;
-			//}
-			//else
-			//	return -1;
-		}
-		else
+		} else
 			return -1;
 	}
-	
+
 }

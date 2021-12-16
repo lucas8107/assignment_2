@@ -1,6 +1,5 @@
-./ai/Minimax.java
-./ai/Node.java
 ./cf/ConnectFour.java
+./cf/Game.java
+./cf/GameBuilder.java
+./cf/Player.java
 ./cf/FieldGUI.java
-./util/ObjectSizeFetcher.java
-./util/Util.java
