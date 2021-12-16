@@ -6,50 +6,82 @@ import java.awt.event.*;
 
 public class FieldGUI extends JFrame implements MouseListener {
 
+	public final String TITLE = "ConnectFour, by Oak :D";
 	private final int WIDTH = 490;
-	private final int HEIGHT = 490;
-	private final int CIRCLE_DIAMETER = 70;
+	private final int HEIGHT = 420;
+	private int CIRCLE_DIAMETER = 70;
+
 	private Game game;
 	private Color[] colors = { Color.RED, Color.BLUE };
-	// private int[] slots = { 0, 0, 0, 0, 0, 0, 0 };
 	private Data inputPipe;
+	private int topOffset;
+	private int bottomOffset;
+	private int leftOffset;
+	private int rightOffset;
 
-	// public FieldGUI(Game game) {
 	public FieldGUI(Game game, Data data) {
 		super();
 
+		topOffset = 31;
+		bottomOffset = 8;
+		leftOffset = 8;
+		rightOffset = 8;
+
 		this.game = game;
-		setSize(WIDTH, HEIGHT);
-		setLocation(100, 100);
+
+		setTitle(TITLE);
+
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		int screen_width = (int)size.getWidth();
+		int screen_height = (int)size.getHeight();
+
+		// setSize(WIDTH, HEIGHT);
+
+		// topOffset = getInsets().top;
+		// bottomOffset = getInsets().bottom;
+		// leftOffset = getInsets().left;
+		// rightOffset = getInsets().right;
+
+		setSize(WIDTH + leftOffset + rightOffset, HEIGHT + topOffset + bottomOffset);
+		// setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		// pack();
+
+		setLocationRelativeTo(null);
+
 		addMouseListener(this);
 		setVisible(true);
+		System.out.println(getInsets().top + ", " + getInsets().bottom + ", " + getInsets().left + ", " + getInsets().right);
+		
 		startF(this.getGraphics());
+
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.getGraphics().drawString("Game", 0, 0);
 		this.inputPipe = data;
-		// this.game.start();
+
 	}
 
 	public void paint(Graphics g) {
-		System.out.println("Painting");
 	}
 
 	public void startF(Graphics g) {
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.fillRect(leftOffset, topOffset, WIDTH, HEIGHT);
 		g.setColor(Color.WHITE);
-		for (int i = 0; i < WIDTH; i += CIRCLE_DIAMETER) {
-			for (int j = 0; j < HEIGHT; j += CIRCLE_DIAMETER) {
+		for (int i = leftOffset; i < WIDTH - rightOffset; i += CIRCLE_DIAMETER) {
+			for (int j = topOffset; j < HEIGHT - bottomOffset; j += CIRCLE_DIAMETER) {
+				System.out.println(i + ", " + j);
+				if (i == j && i == 0)
+					g.fillOval(i, j, 5, 5);
 				g.fillOval(i, j, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 			}
 		}
 	}
 
-	public void drawMove(int x, int y, Color color) {
+	public void drawMove(int x, int[] slots, int turn) {
+		int translated_x = x * CIRCLE_DIAMETER;
 		Graphics g = this.getGraphics();
-		g.setColor(color);
-		g.fillOval(x, y, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
-		// this.update(g);
+		g.setColor(colors[turn]);
+		g.fillOval(translated_x + leftOffset,  HEIGHT + topOffset - (slots[translated_x / CIRCLE_DIAMETER]) * CIRCLE_DIAMETER, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 	}
 
 	// The next 4 methods must be defined, but you won't use them.
@@ -65,20 +97,14 @@ public class FieldGUI extends JFrame implements MouseListener {
 	public void mousePressed(MouseEvent e) {
 	}
 
-	// Similar to next int
 	public void mouseClicked(MouseEvent e) {
 		if (game.getBoard().checkState() != Board.State.NONTERMINAL)
 			return;
 		if (game.getCurrentPlayer() instanceof ComputerPlayer)
 			return;
-		int[] slots = game.getBoard().slots;
 
 		int x = e.getX();
 		x -= x % CIRCLE_DIAMETER;
-
-		if (slots[x / CIRCLE_DIAMETER] < 6) {
-			drawMove(x, HEIGHT - (slots[x / CIRCLE_DIAMETER] + 1) * CIRCLE_DIAMETER, colors[game.getTurn()]);
-		}
 
 		synchronized (inputPipe) {
 			inputPipe.send(x / CIRCLE_DIAMETER);

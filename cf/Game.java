@@ -6,6 +6,7 @@ public class Game extends Thread {
     private int playerCount = 0;
     private Board board;
     private int turn = -1;
+    private FieldGUI gui;
 
     public Game() {
         players = new Player[2];
@@ -24,6 +25,10 @@ public class Game extends Thread {
         return players[turn];
     }
 
+    public void setGUI(FieldGUI gui) {
+        this.gui = gui;
+    }
+
     public void run() {
         Board.State state;
         boolean canChangeTurn = true;
@@ -33,7 +38,14 @@ public class Game extends Thread {
                 turn = (turn + 1) % players.length;
             board.draw2Darray();
             int move = players[turn].getMove(board);
+
+            if (gui != null)
+                gui.setTitle(gui.TITLE + "(" + players[turn].getName() + "'s turn)");
+
             canChangeTurn = board.makeMove(move, players[turn].getToken());
+
+            if (canChangeTurn && gui != null)
+                gui.drawMove(move, board.slots, turn);
 
             state = board.checkState();
         } while (state == Board.State.NONTERMINAL);

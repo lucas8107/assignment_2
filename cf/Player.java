@@ -58,10 +58,6 @@ class ComputerPlayer extends Player {
         super(s, c);
     }
 
-    public void setGUI(FieldGUI gui) {
-        this.gui = gui;
-    }
-
     public int getMove(Board board) {
         Node node = new Node(board.start.clone(), true, board.slots.clone(), -1, ++nodeDepth, this.getToken());
 

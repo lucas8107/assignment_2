@@ -26,7 +26,21 @@ public class GameBuilder {
         Player player1 = new HumanPlayer("Player1", 'X');
         Player player2 = new ComputerPlayer("Player2", 'O');
         ((HumanPlayer) player1).setEnvironment(new GUIGame(data));
-        ((ComputerPlayer) player2).setGUI(gui);
+        game.setGUI(gui);
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+
+        return game;
+    }
+
+    public static Game buildGUIBxB() {
+        Game game = new Game();
+
+        FieldGUI gui = new FieldGUI(game, null);
+
+        Player player1 = new ComputerPlayer("Player1", 'X');
+        Player player2 = new ComputerPlayer("Player2", 'O');
+        game.setGUI(gui);
         game.addPlayer(player1);
         game.addPlayer(player2);
 

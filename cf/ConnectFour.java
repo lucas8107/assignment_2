@@ -3,7 +3,7 @@ package cf;
 public class ConnectFour {
 
 	public static void main(String args[]) {
-		Game game = GameBuilder.buildGUIHxB();
+		Game game = GameBuilder.buildGUIBxB();
 		game.run();
 
 	}
