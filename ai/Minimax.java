@@ -414,13 +414,10 @@ public abstract class Minimax {
 		}
 
 		return (count == 0) ? true : false;
-
-		// return false;
-
 	}
 
 	/**
-	 * Set the depth search limit the will be
+	 * Set the depth search limit that will be
 	 * used in both strategies (default is 9)
 	 * 
 	 * @param depth
