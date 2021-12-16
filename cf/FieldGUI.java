@@ -6,7 +6,7 @@ import java.awt.event.*;
 
 public class FieldGUI extends JFrame implements MouseListener {
 
-	public final String TITLE = "ConnectFour, by Oak :D";
+	private final String TITLE = "ConnectFour, by Oak :D";
 	private final int WIDTH = 490;
 	private final int HEIGHT = 420;
 	private int CIRCLE_DIAMETER = 70;
@@ -52,10 +52,9 @@ public class FieldGUI extends JFrame implements MouseListener {
 		setVisible(true);
 		System.out.println(getInsets().top + ", " + getInsets().bottom + ", " + getInsets().left + ", " + getInsets().right);
 		
-		startF(this.getGraphics());
+		drawBoard();
 
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.getGraphics().drawString("Game", 0, 0);
 		this.inputPipe = data;
 
 	}
@@ -63,25 +62,43 @@ public class FieldGUI extends JFrame implements MouseListener {
 	public void paint(Graphics g) {
 	}
 
-	public void startF(Graphics g) {
-		g.setColor(Color.BLACK);
-		g.fillRect(leftOffset, topOffset, WIDTH, HEIGHT);
-		g.setColor(Color.WHITE);
+	public String getDefaultTitle() {
+		return TITLE;
+	}
+
+	private Graphics2D getAAGraphics2D(Graphics g) {
+		Graphics2D aaGraphics = (Graphics2D) g.create();
+
+		RenderingHints hints = new RenderingHints(
+			RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON
+		);
+		aaGraphics.setRenderingHints(hints);
+
+		return aaGraphics;
+	}
+
+	public void drawBoard() {
+		Graphics2D g2d = getAAGraphics2D(this.getGraphics());
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(leftOffset, topOffset, WIDTH, HEIGHT);
+		g2d.setColor(Color.WHITE);
 		for (int i = leftOffset; i < WIDTH - rightOffset; i += CIRCLE_DIAMETER) {
 			for (int j = topOffset; j < HEIGHT - bottomOffset; j += CIRCLE_DIAMETER) {
 				System.out.println(i + ", " + j);
 				if (i == j && i == 0)
-					g.fillOval(i, j, 5, 5);
-				g.fillOval(i, j, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+					g2d.fillOval(i, j, 5, 5);
+				g2d.fillOval(i, j, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 			}
 		}
+		g2d.dispose();
 	}
 
 	public void drawMove(int x, int[] slots, int turn) {
+		Graphics2D g2d = getAAGraphics2D(this.getGraphics());
 		int translated_x = x * CIRCLE_DIAMETER;
-		Graphics g = this.getGraphics();
-		g.setColor(colors[turn]);
-		g.fillOval(translated_x + leftOffset,  HEIGHT + topOffset - (slots[translated_x / CIRCLE_DIAMETER]) * CIRCLE_DIAMETER, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+		g2d.setColor(colors[turn]);
+		g2d.fillOval(translated_x + leftOffset,  HEIGHT + topOffset - (slots[translated_x / CIRCLE_DIAMETER]) * CIRCLE_DIAMETER, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+		g2d.dispose();
 	}
 
 	// The next 4 methods must be defined, but you won't use them.

@@ -40,7 +40,7 @@ public class Game extends Thread {
             int move = players[turn].getMove(board);
 
             if (gui != null)
-                gui.setTitle(gui.TITLE + "(" + players[turn].getName() + "'s turn)");
+                gui.setTitle(gui.getDefaultTitle() + "(" + players[turn].getName() + "'s turn)");
 
             canChangeTurn = board.makeMove(move, players[turn].getToken());
 
