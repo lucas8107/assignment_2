@@ -3,9 +3,8 @@ package cf;
 public class ConnectFour {
 
 	public static void main(String args[]) {
-		Game game = GameBuilder.buildGUIBxB();
+		Game game = GameBuilder.buildGUIHxB();
 		game.run();
-
 	}
 
 }
