@@ -3,7 +3,6 @@ import java.util.LinkedList;
 import util.Util;
 
 public class Node implements Comparable<Node> {
-
 	// 7x7 cells
 	static int totalNodes = 0;
 	
@@ -28,8 +27,6 @@ public class Node implements Comparable<Node> {
 			this.enemyToken = 'O';
 		else
 			this.enemyToken = 'X';
-		//if(move != -1) 
-		//	Minimax.visitedNodes++;
 	}
 	
 	public LinkedList<Node> makeDescendants() {
@@ -49,7 +46,7 @@ public class Node implements Comparable<Node> {
 					temp[this.slots[i]][i] = this.token;
 				else
 					temp[this.slots[i]][i] = this.enemyToken;
-				children.add(new Node(temp, !isMax, temp_2, i, new Integer(this.depth + 1), new Character(this.token)));
+				children.add(new Node(temp, !isMax, temp_2, i, this.depth + 1, this.token));
 			}
 		}
 		
@@ -65,21 +62,10 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public int compareTo(Node o) {
-		// TODO Auto-generated method stub
 		if(this.utility > o.utility)
 			return 1;
 		else if(this.utility == o.utility) {
 			return 0;
-		//	if(this.depth > o.depth)
-			//	return 1;
-			//else if(this.depth == o.depth) {
-			//	if(Math.abs(this.move - 4) < Math.abs(o.move - 4))
-			//		return 1;
-			//	else
-					//return -1;
-			//}
-			//else
-			//	return -1;
 		}
 		else
 			return -1;

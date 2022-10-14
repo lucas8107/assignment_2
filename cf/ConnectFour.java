@@ -1,9 +1,17 @@
 package cf;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ai.Minimax;
 import ai.Node;
+import ai.strategies.AlphaBeta;
+import ai.strategies.Minimax;
+import ai.strategies.Strategy;
 import util.Util;
+import cf.player.Player;
+import cf.player.ComputerPlayer;
+import cf.player.HumanPlayer;
 
 public class ConnectFour implements Runnable {
 
@@ -24,27 +32,45 @@ public class ConnectFour implements Runnable {
 	static char you;
 	
 	public void run() {
-		// TODO Auto-generated method stub
 		Scanner stdin = new Scanner(System.in);
-		
-		
-		
-		System.out.print("Choose the depth limit: ");
-		Minimax.setDepth(stdin.nextInt());
+		ArrayList<Player> players = new ArrayList<>();
+		int firstPlayer = 0;
+
 		System.out.print("Choose the algorithm (1 - Minimax/2 - AlphaBeta): ");
-		int minmaxOrAlphabeta = stdin.nextInt();
+		int minmaxOrAlphabeta = 0;
+		while(true) {
+			try {
+				minmaxOrAlphabeta = stdin.nextInt();
+				break;
+			} catch(InputMismatchException ex) {
+				System.out.print("Please, enter an integer: ");
+				stdin.next();
+			} catch(NoSuchElementException ex) {
+				System.out.println("\nLeaving");
+				System.exit(1);
+			}
+		}
+
+		Strategy strategy = null;
+		if(minmaxOrAlphabeta == 1)
+			strategy = new Minimax();
+		else
+			strategy = new AlphaBeta();
+
+		players.add(new ComputerPlayer());
+
+		System.out.print("Choose the depth limit: ");
+		strategy.setDepth(stdin.nextInt());
 		System.out.print("Bot x Bot or Bot vs Human (1 - bxb / 2 - bxh)?");
 		if(stdin.nextInt() == 1)
-			botXbot = true;
+			players.add(new ComputerPlayer());
 		else
-			botXbot = false;
+			players.add(new HumanPlayer());
 		
 		if(!botXbot) {
 			System.out.print("Would you like to start (1 - yes/2 - no)?: ");
-			if(stdin.nextInt() == 2)
-				player = false;
-			else
-				player = true;
+			if(stdin.nextInt() == 1)
+				firstPlayer = 1;
 		}
 		
 		System.out.print("Would you like to use GUI (Status on console) (1 - yes/2 - no)?:");
@@ -95,7 +121,6 @@ public class ConnectFour implements Runnable {
 			
 			if(!player) {
 				node = new Node(start.clone(), true, slots.clone(), -1, node.getDepth() + 1, ai);
-				//Util.draw2Darray(start);
 				if(isTerminal(start) && !tie) {
 					System.out.println("Winner: " + you);
 					break;
@@ -105,21 +130,16 @@ public class ConnectFour implements Runnable {
 					break;
 				}
 				System.out.println("AI's turn...");
-				if(minmaxOrAlphabeta == 1)
-					makeMove((node = Minimax.bestMove(node)).getMove(), ai);
-				else
-					makeMove((node = Minimax.bestMoveAB(node)).getMove(), ai);
+				makeMove((node = strategy.bestMove(node)).getMove(), ai);
+
 				if(useGUI)
 					field.drawMove(node.getMove() * 70, (6 - slots[node.getMove()])*70, colorAI);
 				Util.draw2Darray(start);
 				
 			}
-			else {
-				
-				
+			else {				
 				if(botXbot) {
 					node_2 = new Node(start.clone(), true, slots.clone(), -1, node_2.getDepth() + 1, you);
-					//Util.draw2Darray(start);
 					if(isTerminal(start) && !tie) {
 						System.out.println("Winner: " + ai);
 						break;
@@ -129,12 +149,9 @@ public class ConnectFour implements Runnable {
 						break;
 					}
 					System.out.println("AI's turn...");
-					if(minmaxOrAlphabeta == 1)
-						makeMove((node_2 = Minimax.bestMove(node_2)).getMove(), you);
-					else
-						makeMove((node_2 = Minimax.bestMoveAB(node_2)).getMove(), you);
+					makeMove((node_2 = strategy.bestMove(node_2)).getMove(), you);
 					if(useGUI)
-						field.drawMove(node_2.getMove() * 70, (6 - slots[node_2.getMove()])*70, colorHuman);
+						field.drawMove(node_2.getMove() * 70, (6 - slots[node_2.getMove()]) * 70, colorHuman);
 					Util.draw2Darray(start);
 				}
 				else if(!useGUI) {
@@ -150,8 +167,6 @@ public class ConnectFour implements Runnable {
 					makeMove(stdin.nextInt() - 1, you);
 				}
 				else {
-                    //TODO
-                    
                     try {
                         Thread.sleep(0);
                     }
@@ -172,22 +187,12 @@ public class ConnectFour implements Runnable {
 			}
 		}
 		
-		
 		player = false;
 		
 		stdin.close();
 	}
 	
-	public static void makeMove(int col, char token) {
-		if(slots[col] >= 6) {
-			System.out.println("Invalid move");
-			return;
-		}
-		
-		start[slots[col]][col] = token;
-		slots[col]++;
-		player = !player;
-	}
+
 	
 	public Color pickColor(String str, Scanner stdin) {
 		System.out.print("Choose " + str + " color (BLUE - 1, RED - 2, GREEN - 3, YELLOW - 4, MAGENTA - 5): ");
@@ -251,7 +256,6 @@ public class ConnectFour implements Runnable {
 		}
 		
 		return false;
-		//return false;
 		
 	}
 
