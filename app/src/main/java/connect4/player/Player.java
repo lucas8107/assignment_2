@@ -1,4 +1,4 @@
-package cf.player;
+package connect4.player;
 
 import java.awt.Color;
 
@@ -22,6 +22,5 @@ public abstract class Player {
 		
 		start[slots[col]][col] = token;
 		slots[col]++;
-		player = !player;
 	}
 }

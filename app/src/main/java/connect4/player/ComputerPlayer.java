@@ -1,4 +1,4 @@
-package cf.player;
+package connect4.player;
 
 import ai.strategies.Strategy;
 
