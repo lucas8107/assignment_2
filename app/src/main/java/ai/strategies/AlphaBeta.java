@@ -15,21 +15,21 @@ public class AlphaBeta extends Strategy {
 		LinkedList<Node> children = currentState.makeDescendants();
 		
 		Node cursor;
-		for(int i = 0; i < children.size(); i++) {
-			cursor = children.get(i);
+		for (Node child : children) {
+			cursor = child;
 			cursor.setUtility(utility(cursor.cells, false, cursor.getToken(), cursor.getEnemyToken()));
 		}
 		
 		Collections.sort(children, Collections.reverseOrder());
 		
 		Node max = children.getFirst();
-		
-		for(int i = 0; i < children.size(); i++) {
-			int temp = alphabeta(children.get(i), false, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+		for (Node child : children) {
+			int temp = alphabeta(child, false, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			System.out.println(temp);
-			children.get(i).setUtility(temp);
-			if(max.compareTo(children.get(i)) < 0)
-				max = children.get(i);
+			child.setUtility(temp);
+			if (max.compareTo(child) < 0)
+				max = child;
 		}
 		
 		deltaTime = System.currentTimeMillis() - deltaTime;
@@ -47,9 +47,10 @@ public class AlphaBeta extends Strategy {
     private int alphabeta(Node node, boolean isMax, int depth, int alpha, int beta) {
 		if(isTerminal(node.cells) || depth == depthLimit)
 				return utility(node.cells, isMax, node.getToken(), node.getEnemyToken());
-		
+
+		int best;
 		if(isMax) {
-			int best = Integer.MIN_VALUE;
+			best = Integer.MIN_VALUE;
 			for(Node child: node.makeDescendants()) {
 				int v = alphabeta(child, false, depth + 1, alpha, beta);
 				if(depth == 1)
@@ -62,10 +63,9 @@ public class AlphaBeta extends Strategy {
 					return best;
 				}
 			}
-			return best;
 		}
 		else {
-			int best = Integer.MAX_VALUE;
+			best = Integer.MAX_VALUE;
 			for(Node child: node.makeDescendants()) {
 				int v = alphabeta(child, true, depth + 1, alpha, beta);
 				if(depth == 1)
@@ -78,8 +78,8 @@ public class AlphaBeta extends Strategy {
 					return best;
 				}
 			}
-			return best;
 		}
+		return best;
 	}
 
 }

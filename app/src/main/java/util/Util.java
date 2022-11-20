@@ -33,7 +33,7 @@ public abstract class Util {
 							 matrix[5 - i][6] + '\n';
 		}
 		System.out.print(string);
-		System.out.println("Col:\t1 2 3 4 5 6 7\n");
+		System.out.println("Col:1 2 3 4 5 6 7\n");
 	}
 	
 	/**

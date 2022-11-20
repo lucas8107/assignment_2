@@ -16,7 +16,7 @@ public abstract class Strategy {
 		
 		for(int i = 0; i < 6; i++) {
 			for(int j = 0; j < 7; j++) {
-				if(i < 6 && j < 4) {
+				if(j < 4) {
 					if(nodeCells[i][j] == token)
 						count++;
 					else if(nodeCells[i][j] == enemyToken)
@@ -69,7 +69,7 @@ public abstract class Strategy {
 					count2 = 0;
 				}
 				
-				if(i < 3 && j < 7) {
+				if(i < 3) {
 					if(nodeCells[i][j] == token)
 						count++;
 					else if(nodeCells[i][j] == enemyToken)

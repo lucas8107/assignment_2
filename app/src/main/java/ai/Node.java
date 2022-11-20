@@ -3,17 +3,14 @@ import java.util.LinkedList;
 import util.Util;
 
 public class Node implements Comparable<Node> {
-	// 7x7 cells
-	static int totalNodes = 0;
-	
 	public char[][] cells;
-	private int[] slots;
-	private boolean isMax;
+	private final int[] slots;
+	private final boolean isMax;
 	private int utility;
-	private int move;
-	private int depth;
-	private char token;
-	private char enemyToken;
+	private final int move;
+	private final int depth;
+	private final char token;
+	private final char enemyToken;
 	
 	public Node(char[][] cells, boolean isMax, int[] slots, int move, int depth, char token) {
 		this.cells = cells;
@@ -23,10 +20,7 @@ public class Node implements Comparable<Node> {
 		this.move = move;
 		this.depth = depth;
 		this.token = token;
-		if(token == 'X')
-			this.enemyToken = 'O';
-		else
-			this.enemyToken = 'X';
+		this.enemyToken = token == 'X' ? 'O' : 'X';
 	}
 	
 	public LinkedList<Node> makeDescendants() {
@@ -42,10 +36,7 @@ public class Node implements Comparable<Node> {
 				char[][] temp = Util.copy2Darray(this.cells);
 				int[] temp_2 = Util.copyArray(this.slots);
 				temp_2[i]++;
-				if(isMax)
-					temp[this.slots[i]][i] = this.token;
-				else
-					temp[this.slots[i]][i] = this.enemyToken;
+				temp[this.slots[i]][i] = isMax ? this.token : this.enemyToken;
 				children.add(new Node(temp, !isMax, temp_2, i, this.depth + 1, this.token));
 			}
 		}

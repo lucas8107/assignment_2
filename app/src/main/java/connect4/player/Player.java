@@ -10,17 +10,13 @@ public abstract class Player {
         this.token = token;
     }
 
+    public char getToken() { return this.token; }
+
     public void setColor(Color color) {
         this.color = color;
     }
 
-    public void makeMove(int col, char token) {
-		if(slots[col] >= 6) {
-			System.out.println("Invalid move");
-			return;
-		}
-		
-		start[slots[col]][col] = token;
-		slots[col]++;
-	}
+    public int makeMove(char[][] start, int[] cols) {
+        return 0;
+    }
 }

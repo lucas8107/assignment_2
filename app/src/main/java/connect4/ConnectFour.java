@@ -1,214 +1,79 @@
 package connect4;
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ai.Node;
+
 import ai.strategies.AlphaBeta;
-import ai.strategies.Minimax;
-import ai.strategies.Strategy;
+import connect4.player.Player;
+import connect4.player.ComputerPlayer;
 import util.Util;
-import cf.player.Player;
-import cf.player.ComputerPlayer;
-import cf.player.HumanPlayer;
+
 
 public class ConnectFour implements Runnable {
-
-	public static char[][] start = {{'-','-','-','-','-','-','-'},
+	public static final char[][] start = {{'-','-','-','-','-','-','-'},
 									{'-','-','-','-','-','-','-'},
 									{'-','-','-','-','-','-','-'},
 									{'-','-','-','-','-','-','-'},
 									{'-','-','-','-','-','-','-'},
 									{'-','-','-','-','-','-','-'}};
-	public static int[] slots = {   0,  0,  0,  0,  0,  0,  0};
-
-	static boolean player = false;
-	static boolean botXbot = false;
-	public static boolean tie = false;
-	static FieldGUI field;
-	static Color colorAI, colorHuman;
-	static char ai;
-	static char you;
+	private final int[] slots = {0,  0,  0,  0,  0,  0,  0};
+	private int turn = 0;
 	
 	public void run() {
+		int NUMBER_OF_PLAYERS = 2;
+
 		Scanner stdin = new Scanner(System.in);
-		ArrayList<Player> players = new ArrayList<>();
-		int firstPlayer = 0;
+		Player[] players = new Player[2];
+		char[] tokens = {'X', 'O'};
 
-		System.out.print("Choose the algorithm (1 - Minimax/2 - AlphaBeta): ");
-		int minmaxOrAlphabeta = 0;
+		players[0] = new ComputerPlayer(new AlphaBeta());
+		players[0].setToken(tokens[0]);
+
+		players[1] = new ComputerPlayer(new AlphaBeta());
+		players[1].setToken(tokens[1]);
+
 		while(true) {
-			try {
-				minmaxOrAlphabeta = stdin.nextInt();
+			if(isTerminal(start)) {
+				System.out.println("Winner: ");
 				break;
-			} catch(InputMismatchException ex) {
-				System.out.print("Please, enter an integer: ");
-				stdin.next();
-			} catch(NoSuchElementException ex) {
-				System.out.println("\nLeaving");
-				System.exit(1);
 			}
+
+			System.out.println("Player " + turn + " turn");
+			int move = players[turn].makeMove(start, slots);
+
+			if(isValid(move)) {
+				start[slots[move]][move] = players[turn].getToken();
+				slots[move]++;
+				turn = (turn + 1) % NUMBER_OF_PLAYERS;
+			} else {
+				System.out.println("Player " + turn + " made an invalid move\n Please, try again");
+			}
+
+			Util.draw2Darray(start);
 		}
 
-		Strategy strategy = null;
-		if(minmaxOrAlphabeta == 1)
-			strategy = new Minimax();
-		else
-			strategy = new AlphaBeta();
-
-		players.add(new ComputerPlayer());
-
-		System.out.print("Choose the depth limit: ");
-		strategy.setDepth(stdin.nextInt());
-		System.out.print("Bot x Bot or Bot vs Human (1 - bxb / 2 - bxh)?");
-		if(stdin.nextInt() == 1)
-			players.add(new ComputerPlayer());
-		else
-			players.add(new HumanPlayer());
-		
-		if(!botXbot) {
-			System.out.print("Would you like to start (1 - yes/2 - no)?: ");
-			if(stdin.nextInt() == 1)
-				firstPlayer = 1;
-		}
-		
-		System.out.print("Would you like to use GUI (Status on console) (1 - yes/2 - no)?:");
-		boolean useGUI;
-		if(stdin.nextInt() == 1)
-			useGUI = true;
-		else
-			useGUI = false;
-		
-		if(useGUI) {
-			if(!botXbot) {
-				colorAI = pickColor("AI", stdin);
-				colorHuman = pickColor("Human", stdin);
-			}
-			else {
-				colorAI = Color.RED;
-				colorHuman = Color.BLUE;
-			}
-			ai = 'X';
-			you = 'O';
-		}
-		else {
-			int aux;
-			if(!botXbot) {
-				System.out.print("Choose your token (1 - X/ 2 - O): ");
-				aux = stdin.nextInt();
-			}
-			else
-				aux = 2;
-			if(aux == 1) {
-				ai = 'O';
-				you = 'X';
-			}
-			else {
-				ai = 'X';
-				you = 'O';
-			}
-		}
-
-		Node node = new Node(start, true, slots.clone(), -1, 0, ai);
-		Node node_2 = null;
-		if(botXbot)
-			node_2 = new Node(start, true, slots.clone(), -1, 0, you);
-		if(useGUI)
-			field = new FieldGUI();
-		
-		while(true) {
-			
-			if(!player) {
-				node = new Node(start.clone(), true, slots.clone(), -1, node.getDepth() + 1, ai);
-				if(isTerminal(start) && !tie) {
-					System.out.println("Winner: " + you);
-					break;
-				}
-				else if(tie) {
-					System.out.println("Draw");
-					break;
-				}
-				System.out.println("AI's turn...");
-				makeMove((node = strategy.bestMove(node)).getMove(), ai);
-
-				if(useGUI)
-					field.drawMove(node.getMove() * 70, (6 - slots[node.getMove()])*70, colorAI);
-				Util.draw2Darray(start);
-				
-			}
-			else {				
-				if(botXbot) {
-					node_2 = new Node(start.clone(), true, slots.clone(), -1, node_2.getDepth() + 1, you);
-					if(isTerminal(start) && !tie) {
-						System.out.println("Winner: " + ai);
-						break;
-					}
-					else if(tie) {
-						System.out.println("Draw");
-						break;
-					}
-					System.out.println("AI's turn...");
-					makeMove((node_2 = strategy.bestMove(node_2)).getMove(), you);
-					if(useGUI)
-						field.drawMove(node_2.getMove() * 70, (6 - slots[node_2.getMove()]) * 70, colorHuman);
-					Util.draw2Darray(start);
-				}
-				else if(!useGUI) {
-					if(isTerminal(start) && !tie) {
-						System.out.println("Winner: " + ai);
-						break;
-					}
-					else if(tie) {
-						System.out.println("Draw");
-						break;
-					}
-					System.out.print("Choose a column: ");
-					makeMove(stdin.nextInt() - 1, you);
-				}
-				else {
-                    try {
-                        Thread.sleep(0);
-                    }
-                    catch(InterruptedException ex) {
-                        
-                    }
-                    
-                    if(isTerminal(start) && !tie) {
-						System.out.println("Winner: " + ai);
-						break;
-					}
-					else if(tie) {
-						System.out.println("Draw");
-						break;
-					}
-				}
-				
-			}
-		}
-		
-		player = false;
-		
 		stdin.close();
 	}
 	
-
+	private boolean isValid(int move) {
+		return !(slots[move] >= 6);
+	}
 	
 	public Color pickColor(String str, Scanner stdin) {
 		System.out.print("Choose " + str + " color (BLUE - 1, RED - 2, GREEN - 3, YELLOW - 4, MAGENTA - 5): ");
 		switch(stdin.nextInt()) {
-			case 1: return Color.BLUE;
 			case 2: return Color.RED;
 			case 3: return Color.GREEN;
 			case 4: return Color.YELLOW;
 			case 5: return Color.MAGENTA;
+			case 1:
 			default: return Color.BLUE;
 		}
 	}
 	
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		ConnectFour game = new ConnectFour();
 		game.run();
+//		JFrame frame = new FieldGUI();
 	}
 	
 	/**
@@ -221,13 +86,13 @@ public class ConnectFour implements Runnable {
 		for(int i = 0; i < 6; i++) {
 			for(int j = 0; j < 7; j++) {
 				if(boardCells[i][j] != '-') {
-					if(i < 6 && j < 4) {
+					if(j < 4) {
 						if(boardCells[i][j] == boardCells[i][j + 1] && 
 						   boardCells[i][j] == boardCells[i][j + 2] && 
 						   boardCells[i][j] == boardCells[i][j + 3])
 							return true;
 					}
-					if(i < 3 && j < 7) {
+					if(i < 3) {
 						if(boardCells[i][j] == boardCells[i + 1][j] && 
 						   boardCells[i][j] == boardCells[i + 2][j] && 
 						   boardCells[i][j] == boardCells[i + 3][j])
@@ -249,14 +114,8 @@ public class ConnectFour implements Runnable {
 					count++;
 			}
 		}
-		
-		if(count == 0) {
-			tie = true;
-			return true;
-		}
-		
-		return false;
-		
+
+		return count == 0;
 	}
 
 }
